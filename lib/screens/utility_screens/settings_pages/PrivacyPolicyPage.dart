@@ -13,6 +13,8 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
+        elevation: 0,
         title: const Text('Privacy Policy'),
       ),
       body: Center(

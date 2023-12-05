@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pomodoro/screens/auth_screens/LoginScreen.dart';
 import 'package:pomodoro/screens/main_screens/HomeScreen.dart';
-import 'package:pomodoro/screens/main_screens/TimerScreen.dart';
 import 'package:pomodoro/screens/utility_screens/NotFoundScreen.dart';
 import 'package:pomodoro/screens/utility_screens/SettingsScreen.dart';
 import 'package:pomodoro/screens/utility_screens/SplashScreen.dart';
+import 'package:pomodoro/screens/main_screens/StatisticsScreen.dart';
 import 'package:pomodoro/screens/utility_screens/settings_pages/AccountPage.dart';
 import 'package:pomodoro/screens/utility_screens/settings_pages/NotificationPage.dart';
 import 'package:pomodoro/screens/utility_screens/settings_pages/PrivacyPolicyPage.dart';
@@ -19,12 +19,12 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => const LoginScreen());
     case HomeScreen.routeName:
       return MaterialPageRoute(builder: (context) => const HomeScreen());
-    case TimerScreen.routeName:
-      return MaterialPageRoute(builder: (context) => TimerScreen());
     case SettingsScreen.routeName:
       return MaterialPageRoute(builder: (context) => const SettingsScreen());
     case AccountPage.routeName:
       return MaterialPageRoute(builder: (context) => const AccountPage());
+    case StatisticsScreen.routeName:
+      return MaterialPageRoute(builder: (context) => const StatisticsScreen());
     case TimerPage.routeName:
       return MaterialPageRoute(builder: (context) => const TimerPage());
     case NotificationPage.routeName:

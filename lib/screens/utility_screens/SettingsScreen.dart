@@ -14,6 +14,39 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  final tiles = [
+    {
+      'title': 'Account',
+      'icon': Icons.account_box_outlined,
+      'route': AccountPage.routeName
+    },
+    // {
+    //   'title': 'View Statistics',
+    //   'icon': Icons.bar_chart_outlined,
+    //   'route': StatisticsScreen.routeName
+    // },
+    {
+      'title': 'Timer',
+      'icon': Icons.timer_outlined,
+      'route': TimerPage.routeName
+    },
+    {
+      'title': 'Notifications',
+      'icon': Icons.notifications_outlined,
+      'route': NotificationPage.routeName
+    },
+    {
+      'title': 'Privacy Policy',
+      'icon': Icons.privacy_tip_outlined,
+      'route': PrivacyPolicyPage.routeName
+    },
+    {
+      'title': 'Terms of Service',
+      'icon': Icons.document_scanner_outlined,
+      'route': TermsPage.routeName
+    },
+  ];
+
   handleLogout() {}
 
   @override
@@ -21,51 +54,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
+        elevation: 0,
         title: const Text('Settings'),
       ),
-      body: ListView(
-        children: [
-          buildListTile(
-            title: 'Account',
-            icon: Icons.account_box_outlined,
+      body: ListView.builder(
+        itemCount: tiles.length,
+        itemBuilder: (context, index) {
+          final tile = tiles[index];
+          return buildListTile(
+            title: tile['title'] as String,
+            icon: tile['icon'] as IconData,
             onTap: () {
-              Navigator.pushNamed(context, AccountPage.routeName);
+              Navigator.of(context).pushNamed(tile['route'] as String);
             },
-          ),
-          buildListTile(
-            title: 'Timer',
-            icon: Icons.timer_outlined,
-            onTap: () {
-              Navigator.pushNamed(context, TimerPage.routeName);
-            },
-          ),
-          buildListTile(
-            title: 'Notifications',
-            icon: Icons.notifications_outlined,
-            onTap: () {
-              Navigator.pushNamed(context, NotificationPage.routeName);
-            },
-          ),
-          buildListTile(
-            title: 'Privacy Policy',
-            icon: Icons.privacy_tip_outlined,
-            onTap: () {
-              Navigator.pushNamed(context, PrivacyPolicyPage.routeName);
-            },
-          ),
-          buildListTile(
-            title: 'Terms of Service',
-            icon: Icons.privacy_tip_outlined,
-            onTap: () {
-              Navigator.pushNamed(context, TermsPage.routeName);
-            },
-          ),
-          buildListTile(
-            title: 'Logout',
-            icon: Icons.exit_to_app,
-            onTap: () {},
-          ),
-        ],
+          );
+        },
       ),
     );
   }

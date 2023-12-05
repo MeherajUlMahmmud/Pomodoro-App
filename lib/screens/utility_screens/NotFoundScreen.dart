@@ -8,6 +8,8 @@ class NotFoundScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
+        elevation: 0,
         title: const Text('Not Found'),
       ),
       body: const Center(
