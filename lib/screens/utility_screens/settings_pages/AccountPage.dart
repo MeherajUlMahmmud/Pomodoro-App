@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pomodoro/screens/utility_screens/settings_pages/UpdateAccountpage.dart';
 
 class AccountPage extends StatefulWidget {
   static const routeName = '/account';
@@ -21,6 +22,14 @@ class _AccountPageState extends State<AccountPage> {
         centerTitle: true,
         elevation: 0,
         title: const Text('Account'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed(UpdateAccountPage.routeName);
+            },
+            icon: const Icon(Icons.edit),
+          ),
+        ],
       ),
       body: Container(
         width: double.infinity,

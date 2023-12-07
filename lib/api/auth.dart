@@ -6,6 +6,9 @@ import 'package:http/http.dart' as http;
 class AuthService {
   Future<Map<String, dynamic>> loginUser(String email, String password) async {
     try {
+      print(email);
+      print(password);
+      print(URLS.kLoginUrl);
       final response = await http.post(
         Uri.parse(URLS.kLoginUrl),
         body: {
@@ -22,14 +25,14 @@ class AuthService {
       } else {
         final data = jsonDecode(response.body);
         return {
-          'error': data['detail'],
+          'error': data['message'] ?? data['detail'] ?? 'Something went wrong',
           'status': response.statusCode,
         };
       }
     } catch (e) {
       print(e.toString());
       return {
-        'error': e.toString(),
+        'error': "Something went wrong",
         'status': 500,
       };
     }
