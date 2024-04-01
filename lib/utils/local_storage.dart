@@ -18,9 +18,25 @@ class LocalStorage {
     }
   }
 
+  Future<String> readStringData(String key) async {
+    try {
+      final prefs = await _getPreferences();
+      final data = prefs.getString(key);
+      return data ?? '';
+    } catch (e) {
+      print(e);
+      return '';
+    }
+  }
+
   Future<bool> writeData(String key, Map<String, dynamic> data) async {
     final prefs = await _getPreferences();
     return prefs.setString(key, jsonEncode(data));
+  }
+
+  Future<bool> writeStringData(String key, String data) async {
+    final prefs = await _getPreferences();
+    return prefs.setString(key, data);
   }
 
   Future<bool> removeData(String key) async {

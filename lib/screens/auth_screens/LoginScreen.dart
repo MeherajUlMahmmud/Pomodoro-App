@@ -2,10 +2,12 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:pomodoro/api/api.dart';
 import 'package:pomodoro/api/auth.dart';
 import 'package:pomodoro/screens/main_screens/HomeScreen.dart';
 import 'package:pomodoro/utils/helper.dart';
 import 'package:pomodoro/utils/local_storage.dart';
+import 'package:pomodoro/utils/urls.dart';
 import 'package:pomodoro/widgets/custom_button.dart';
 import 'package:pomodoro/widgets/custom_text_form_field.dart';
 
@@ -38,13 +40,24 @@ class _LoginScreenState extends State<LoginScreen> {
       isLoading = true;
     });
 
-    AuthService().loginUser(email, password).then((data) async {
-      if (kDebugMode) {
-        print(data);
-      }
+    String loginUrl = URLS.kLoginUrl;
+    Map<String, dynamic> loginData = {
+      'email': email,
+      'password': password,
+    };
+
+    APIService()
+        .sendAuthRequest(
+      loginUrl,
+      loginData,
+    )
+        .then((data) async {
+      FocusScope.of(context).unfocus();
+
       if (data['status'] == 200) {
-        // await localStorage.writeData('user', data['data']['user']);
-        // await localStorage.writeData('tokens', data['data']['tokens']);
+        print(data);
+        await localStorage.writeData('user', data['data']['user']);
+        await localStorage.writeStringData('token', data['data']['token']);
 
         Helper().showSnackBar(
           context,
@@ -75,102 +88,129 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       body: Container(
-        padding: const EdgeInsets.all(10),
-        child: Form(
-          key: _formKey,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Pomodoro',
-                  style: TextStyle(
-                    fontSize: 35,
-                    color: Theme.of(context).primaryColor,
-                    fontWeight: FontWeight.bold,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Pomodoro',
+                    style: TextStyle(
+                      fontSize: 35,
+                      color: Theme.of(context).primaryColor,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 30),
-                const Text(
-                  'Login to continue',
-                  style: TextStyle(
-                    fontSize: 20,
+                  const SizedBox(height: 30),
+                  const Text(
+                    'Login to continue',
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                CustomTextFormField(
-                  width: width,
-                  autofocus: true,
-                  controller: emailController,
-                  labelText: 'Email',
-                  hintText: 'Email Address',
-                  prefixIcon: Icons.email,
-                  textCapitalization: TextCapitalization.none,
-                  borderRadius: 10,
-                  keyboardType: TextInputType.emailAddress,
-                  onChanged: (value) {
-                    setState(() {
-                      email = value;
-                    });
-                  },
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                CustomTextFormField(
-                  width: width,
-                  controller: passwordController,
-                  labelText: 'Password',
-                  hintText: 'Password',
-                  prefixIcon: Icons.lock,
-                  suffixIcon:
-                      !isObscure ? Icons.visibility : Icons.visibility_off,
-                  textCapitalization: TextCapitalization.none,
-                  borderRadius: 10,
-                  keyboardType: TextInputType.visiblePassword,
-                  isObscure: isObscure,
-                  suffixIconOnPressed: () {
-                    setState(() {
-                      isObscure = !isObscure;
-                    });
-                  },
-                  onChanged: (value) {
-                    setState(() {
-                      password = value;
-                    });
-                  },
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter your password';
-                    }
-                    return null;
-                  },
-                ),
-                // Container(
-                //   alignment: Alignment.centerRight,
-                //   child: TextButton(
-                //     onPressed: () {},
-                //     child: const Text('Forgot Password?'),
-                //   ),
-                // ),
-                const SizedBox(height: 10),
-                CustomButton(
-                  text: 'Login',
-                  isLoading: false,
-                  isDisabled: false,
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      handleLogin();
-                    }
-                  },
-                ),
-                // const SizedBox(height: 50),
-                // _buildGoogleButton(),
-              ],
+                  const SizedBox(height: 25),
+                  CustomTextFormField(
+                    width: width,
+                    // autofocus: true,
+                    controller: emailController,
+                    labelText: 'Email',
+                    hintText: 'Email Address',
+                    prefixIcon: Icons.email,
+                    textCapitalization: TextCapitalization.none,
+                    borderRadius: 10,
+                    keyboardType: TextInputType.emailAddress,
+                    onChanged: (value) {
+                      setState(() {
+                        email = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter your email';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  CustomTextFormField(
+                    width: width,
+                    controller: passwordController,
+                    labelText: 'Password',
+                    hintText: 'Password',
+                    prefixIcon: Icons.lock,
+                    suffixIcon:
+                        !isObscure ? Icons.visibility : Icons.visibility_off,
+                    textCapitalization: TextCapitalization.none,
+                    borderRadius: 10,
+                    keyboardType: TextInputType.visiblePassword,
+                    isObscure: isObscure,
+                    suffixIconOnPressed: () {
+                      setState(() {
+                        isObscure = !isObscure;
+                      });
+                    },
+                    onChanged: (value) {
+                      setState(() {
+                        password = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter your password';
+                      }
+                      return null;
+                    },
+                  ),
+                  Container(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {},
+                      child: const Text('Forgot Password?'),
+                    ),
+                  ),
+                  CustomButton(
+                    text: 'Login',
+                    isLoading: isLoading,
+                    isDisabled: isLoading,
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        handleLogin();
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 1,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'or',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Container(
+                          height: 1,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  _buildGoogleButton(),
+                ],
+              ),
             ),
           ),
         ),
@@ -178,74 +218,74 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Widget _buildGoogleButton() {
-  //   signInWithGoogle() async {
-  //     Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
-  //     // setState(() {
-  //     //   isLoading = true;
-  //     // });
+  Widget _buildGoogleButton() {
+    signInWithGoogle() async {
+      Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+      setState(() {
+        isLoading = true;
+      });
 
-  //     // // Trigger the authentication flow
-  //     // final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      // // Trigger the authentication flow
+      // final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-  //     // // Obtain the auth details from the request
-  //     // final GoogleSignInAuthentication? googleAuth =
-  //     //     await googleUser?.authentication;
+      // // Obtain the auth details from the request
+      // final GoogleSignInAuthentication? googleAuth =
+      //     await googleUser?.authentication;
 
-  //     // // Create a new credential
-  //     // final credential = GoogleAuthProvider.credential(
-  //     //   accessToken: googleAuth?.accessToken,
-  //     //   idToken: googleAuth?.idToken,
-  //     // );
-  //     // print(credential);
-  //     // print(googleUser);
+      // // Create a new credential
+      // final credential = GoogleAuthProvider.credential(
+      //   accessToken: googleAuth?.accessToken,
+      //   idToken: googleAuth?.idToken,
+      // );
+      // print(credential);
+      // print(googleUser);
 
-  //     // setState(() {
-  //     //   isLoading = false;
-  //     // });
+      setState(() {
+        isLoading = false;
+      });
 
-  //     // Once signed in, return the UserCredential
-  //     // return await FirebaseAuth.instance.signInWithCredential(credential);
-  //   }
+      // Once signed in, return the UserCredential
+      // return await FirebaseAuth.instance.signInWithCredential(credential);
+    }
 
-  //   return GestureDetector(
-  //     onTap: !isLoading ? signInWithGoogle : null,
-  //     child: Container(
-  //       width: MediaQuery.of(context).size.width,
-  //       height: 50,
-  //       decoration: BoxDecoration(
-  //         borderRadius: BorderRadius.circular(10),
-  //         color: !isLoading
-  //             ? Theme.of(context).primaryColor
-  //             : Theme.of(context).primaryColor.withOpacity(0.5),
-  //         boxShadow: [
-  //           BoxShadow(
-  //             color: Theme.of(context).primaryColor.withOpacity(0.5),
-  //             blurRadius: 10,
-  //             offset: const Offset(0, 5),
-  //           ),
-  //         ],
-  //       ),
-  //       child: Row(
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         children: [
-  //           Image.asset(
-  //             'assets/images/google.png',
-  //             width: 25,
-  //             height: 25,
-  //           ),
-  //           const SizedBox(width: 10),
-  //           Text(
-  //             !isLoading ? 'Sign in with Google' : 'Signing in...',
-  //             style: const TextStyle(
-  //               color: Colors.white,
-  //               fontSize: 16,
-  //               fontWeight: FontWeight.bold,
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
+    return GestureDetector(
+      onTap: !isLoading ? signInWithGoogle : null,
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: 50,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: !isLoading
+              ? Theme.of(context).primaryColor
+              : Theme.of(context).primaryColor.withOpacity(0.5),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).primaryColor.withOpacity(0.5),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/images/google.png',
+              width: 25,
+              height: 25,
+            ),
+            const SizedBox(width: 10),
+            Text(
+              !isLoading ? 'Sign in with Google' : 'Signing in...',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

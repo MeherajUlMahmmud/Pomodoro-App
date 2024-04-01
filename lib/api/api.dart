@@ -2,7 +2,39 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class APIService {
-  // Future<Map<String, dynamic>> sendAuthRequest() async {}
+  Future<Map<String, dynamic>> sendAuthRequest(
+    String url,
+    Map<String, dynamic> data,
+  ) async {
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(data),
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return {
+          'data': data,
+          'status': response.statusCode,
+        };
+      } else {
+        final data = jsonDecode(response.body);
+        return {
+          'error': data['message'] ?? data['detail'] ?? 'Something went wrong',
+          'status': response.statusCode,
+        };
+      }
+    } catch (e) {
+      print(e.toString());
+      return {
+        'error': "Something went wrong",
+        'status': 500,
+      };
+    }
+  }
 
   // Future<Map<String, dynamic>> sendAuthorizedAuthRequest() async {}
 

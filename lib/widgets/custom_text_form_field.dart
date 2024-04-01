@@ -42,7 +42,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
+      margin: const EdgeInsets.symmetric(horizontal: 5.0),
       width: widget.width,
       child: TextFormField(
         maxLines: widget.isObscure ?? false ? 1 : null,

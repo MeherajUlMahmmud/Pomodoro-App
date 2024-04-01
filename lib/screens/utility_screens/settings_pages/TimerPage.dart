@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:pomodoro/utils/local_storage.dart';
 
 class TimerPage extends StatefulWidget {
   static const routeName = '/timer-settings';
@@ -11,9 +12,48 @@ class TimerPage extends StatefulWidget {
 }
 
 class _TimerPageState extends State<TimerPage> {
-  int workSessionDuration = 25;
-  int shortBreakDuration = 5;
-  int longBreakDuration = 10;
+  final LocalStorage localStorage = LocalStorage();
+  Map<String, dynamic> user = {};
+  String token = '';
+
+  TextEditingController titleController = TextEditingController();
+
+  bool isLoading = true;
+  bool isError = false;
+  String errorText = '';
+
+  Map<String, dynamic> initialTimerData = {
+    'workSessionDuration': 25,
+    'shortBreakDuration': 5,
+    'longBreakDuration': 15,
+  };
+  Map<String, dynamic> updatedTimerData = {
+    'workSessionDuration': 25,
+    'shortBreakDuration': 5,
+    'longBreakDuration': 15,
+  };
+
+  @override
+  void initState() {
+    super.initState();
+
+    readTokensAndUser();
+  }
+
+  readTokensAndUser() async {
+    token = await localStorage.readStringData('token');
+    user = await localStorage.readData('user');
+
+    setState(() {
+      initialTimerData = {
+        'workSessionDuration': user['timerData']['workSessionDuration'],
+        'shortBreakDuration': user['timerData']['shortBreakDuration'],
+        'longBreakDuration': user['timerData']['longBreakDuration'],
+      };
+
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,25 +63,37 @@ class _TimerPageState extends State<TimerPage> {
         elevation: 0,
         title: const Text('Timer Settings'),
       ),
-      body: ListView(
-        children: [
-          buildListTile('Work Session Duration', workSessionDuration, (value) {
-            setState(() {
-              workSessionDuration = value;
-            });
-          }),
-          buildListTile('Short Break Duration', shortBreakDuration, (value) {
-            setState(() {
-              shortBreakDuration = value;
-            });
-          }),
-          buildListTile('Long Break Duration', longBreakDuration, (value) {
-            setState(() {
-              longBreakDuration = value;
-            });
-          }),
-        ],
-      ),
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(
+                color: Theme.of(context).primaryColor,
+              ),
+            )
+          : ListView(
+              children: [
+                buildListTile('Work Session Duration',
+                    initialTimerData['workSessionDuration'], (value) {
+                  setState(() {
+                    updatedTimerData['workSessionDuration'] = value;
+                  });
+                  print(updatedTimerData);
+                }),
+                buildListTile('Short Break Duration',
+                    initialTimerData['shortBreakDuration'], (value) {
+                  setState(() {
+                    updatedTimerData['shortBreakDuration'] = value;
+                  });
+                  print(updatedTimerData);
+                }),
+                buildListTile('Long Break Duration',
+                    initialTimerData['longBreakDuration'], (value) {
+                  setState(() {
+                    updatedTimerData['longBreakDuration'] = value;
+                  });
+                  print(updatedTimerData);
+                }),
+              ],
+            ),
     );
   }
 
@@ -55,30 +107,31 @@ class _TimerPageState extends State<TimerPage> {
               title: Center(child: Text(title)),
               content: StatefulBuilder(builder: (context, SBsetState) {
                 return NumberPicker(
-                    selectedTextStyle: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    value: value,
-                    minValue: 1,
-                    maxValue: 60,
-                    onChanged: (value) {
-                      // setState(() => currentValue =
-                      //     value); // to change on widget level state
-                      // SBsetState(() =>
-                      //     currentValue = value); //* to change on dialog state
-                    });
+                  selectedTextStyle: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  value: value,
+                  minValue: 1,
+                  maxValue: 60,
+                  onChanged: onChanged,
+                );
               }),
               actions: [
                 TextButton(
                   child: const Text(
-                    "OK",
+                    "Cancel",
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
                     ),
                   ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text("OK"),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
