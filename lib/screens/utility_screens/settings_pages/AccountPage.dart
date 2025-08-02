@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pomodoro/screens/utility_screens/settings_pages/UpdateAccountpage.dart';
+import 'package:pomodoro/services/firebase_service.dart';
 
 class AccountPage extends StatefulWidget {
   static const routeName = '/account';
@@ -14,6 +14,29 @@ class _AccountPageState extends State<AccountPage> {
   String displayPictureUrl = 'https://via.placeholder.com/150';
   String displayName = 'Display Name';
   String email = 'email@example.com';
+  final FirebaseService _firebaseService = FirebaseService();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      final user = _firebaseService.getCurrentUser();
+      if (user != null) {
+        setState(() {
+          displayName = user.displayName ?? 'Display Name';
+          email = user.email ?? 'email@example.com';
+          displayPictureUrl =
+              user.photoURL ?? 'https://via.placeholder.com/150';
+        });
+      }
+    } catch (e) {
+      // Handle error
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +45,6 @@ class _AccountPageState extends State<AccountPage> {
         centerTitle: true,
         elevation: 0,
         title: const Text('Account'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).pushNamed(UpdateAccountPage.routeName);
-            },
-            icon: const Icon(Icons.edit),
-          ),
-        ],
       ),
       body: Container(
         width: double.infinity,

@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:pomodoro/services/firebase_service.dart';
+import 'package:pomodoro/screens/auth_screens/LoginScreen.dart';
 import 'package:pomodoro/screens/utility_screens/settings_pages/AccountPage.dart';
 import 'package:pomodoro/screens/utility_screens/settings_pages/NotificationPage.dart';
+import 'package:pomodoro/screens/utility_screens/settings_pages/AboutUsPage.dart';
+import 'package:pomodoro/screens/utility_screens/settings_pages/ContactUsPage.dart';
 import 'package:pomodoro/screens/utility_screens/settings_pages/PrivacyPolicyPage.dart';
 import 'package:pomodoro/screens/utility_screens/settings_pages/TermsPage.dart';
 import 'package:pomodoro/screens/utility_screens/settings_pages/TimerPage.dart';
+import 'package:pomodoro/utils/helper.dart';
+import 'package:pomodoro/utils/local_storage.dart';
+import 'package:pomodoro/widgets/sync_status_widget.dart';
 
 class SettingsScreen extends StatefulWidget {
   static const routeName = '/settings';
@@ -45,9 +52,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
       'icon': Icons.document_scanner_outlined,
       'route': TermsPage.routeName
     },
+    {
+      'title': 'About Us',
+      'icon': Icons.info_outline,
+      'route': AboutUsPage.routeName
+    },
+    {
+      'title': 'Contact Us',
+      'icon': Icons.contact_support_outlined,
+      'route': ContactUsPage.routeName
+    },
   ];
 
-  handleLogout() {}
+  final FirebaseService _firebaseService = FirebaseService();
+  final LocalStorage _localStorage = LocalStorage();
+
+  Future<void> handleLogout() async {
+    try {
+      await _firebaseService.signOut();
+      await _localStorage.clearData();
+      
+      Helper().showSnackBar(
+        context,
+        'Logged out successfully',
+        Theme.of(context).primaryColor,
+      );
+      
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        LoginScreen.routeName,
+        (route) => false,
+      );
+    } catch (e) {
+      Helper().showSnackBar(
+        context,
+        'Failed to logout',
+        Colors.red,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,18 +99,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
         elevation: 0,
         title: const Text('Settings'),
       ),
-      body: ListView.builder(
-        itemCount: tiles.length,
-        itemBuilder: (context, index) {
-          final tile = tiles[index];
-          return buildListTile(
-            title: tile['title'] as String,
-            icon: tile['icon'] as IconData,
-            onTap: () {
-              Navigator.of(context).pushNamed(tile['route'] as String);
-            },
-          );
-        },
+      body: ListView(
+        children: [
+          // Sync Status Widget
+          const SyncStatusWidget(),
+
+          // Settings Tiles
+          ...List.generate(tiles.length, (index) {
+            final tile = tiles[index];
+            return buildListTile(
+              title: tile['title'] as String,
+              icon: tile['icon'] as IconData,
+              onTap: () {
+                Navigator.of(context).pushNamed(tile['route'] as String);
+              },
+            );
+          }),
+
+          // Logout Button
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            child: ListTile(
+              leading: Icon(
+                Icons.logout,
+                size: 30,
+                color: Colors.red,
+              ),
+              title: Text(
+                'Logout',
+                style: TextStyle(color: Colors.red),
+              ),
+              onTap: handleLogout,
+            ),
+          ),
+        ],
       ),
     );
   }

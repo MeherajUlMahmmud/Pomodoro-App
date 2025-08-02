@@ -41,11 +41,11 @@ dependencies:
   circular_countdown_timer:
   firebase_auth:
   firebase_core:
+  cloud_firestore:
   google_sign_in:
   numberpicker: ^2.1.2
   graphic: ^2.2.1
-  image_picker:
-  image_cropper:
+  url_launcher: ^6.2.4
 
 dev_dependencies:
   flutter_test:
