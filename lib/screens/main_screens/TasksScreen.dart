@@ -350,7 +350,7 @@ class _TasksScreenState extends State<TasksScreen> {
                   color: Colors.red.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(
+                child: const Text(
                   'Overdue',
                   style: TextStyle(
                     fontSize: 10,
@@ -486,44 +486,81 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                 ),
               ),
               const SizedBox(height: 16),
-              Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('Estimated Pomodoros: '),
-                  Expanded(
-                    child: Slider(
-                      value: _estimatedPomodoros.toDouble(),
-                      min: 1,
-                      max: 10,
-                      divisions: 9,
-                      label: _estimatedPomodoros.toString(),
-                      onChanged: (value) {
-                        setState(() {
-                          _estimatedPomodoros = value.round();
-                        });
-                      },
-                    ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Slider(
+                          value: _estimatedPomodoros.toDouble(),
+                          min: 1,
+                          max: 10,
+                          divisions: 9,
+                          label: _estimatedPomodoros.toString(),
+                          onChanged: (value) {
+                            setState(() {
+                              _estimatedPomodoros = value.round();
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Text(
+                        _estimatedPomodoros.toString(),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(_estimatedPomodoros.toString()),
                 ],
               ),
               const SizedBox(height: 16),
-              Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('Priority: '),
-                  Expanded(
-                    child: SegmentedButton<int>(
-                      segments: const [
-                        ButtonSegment(value: 1, label: Text('Low')),
-                        ButtonSegment(value: 2, label: Text('Medium')),
-                        ButtonSegment(value: 3, label: Text('High')),
-                      ],
-                      selected: {_priority},
-                      onSelectionChanged: (Set<int> newSelection) {
-                        setState(() {
-                          _priority = newSelection.first;
-                        });
-                      },
-                    ),
+                  const SizedBox(height: 8),
+                  SegmentedButton<int>(
+                    segments: const [
+                      ButtonSegment(
+                        value: 1,
+                        label: Text(
+                          'Low',
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      ButtonSegment(
+                        value: 2,
+                        label: Text(
+                          'Mid',
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      ButtonSegment(
+                        value: 3,
+                        label: Text(
+                          'High',
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
+                    selected: {_priority},
+                    onSelectionChanged: (Set<int> newSelection) {
+                      setState(() {
+                        _priority = newSelection.first;
+                      });
+                    },
                   ),
                 ],
               ),

@@ -6,7 +6,8 @@ import 'package:pomodoro/services/sync_service.dart';
 class SessionService {
   static const String _sessionsKey = 'pomodoro_sessions';
   static const String _settingsKey = 'pomodoro_settings';
-  final SyncService _syncService = SyncService();
+  // Remove direct instantiation to break circular dependency
+  // final SyncService _syncService = SyncService();
 
   // Save a session
   Future<void> saveSession(PomodoroSession session) async {
@@ -16,9 +17,14 @@ class SessionService {
 
     final sessionsJson = sessions.map((s) => s.toJson()).toList();
     await prefs.setString(_sessionsKey, jsonEncode(sessionsJson));
-    
-    // Add to sync queue
-    await _syncService.addSessionToSyncQueue(session, 'create');
+
+    // Add to sync queue using lazy initialization
+    try {
+      final syncService = SyncService();
+      await syncService.addSessionToSyncQueue(session, 'create');
+    } catch (e) {
+      // Handle sync error gracefully
+    }
   }
 
   // Get all sessions
@@ -66,9 +72,14 @@ class SessionService {
       final prefs = await SharedPreferences.getInstance();
       final sessionsJson = sessions.map((s) => s.toJson()).toList();
       await prefs.setString(_sessionsKey, jsonEncode(sessionsJson));
-      
-      // Add to sync queue
-      await _syncService.addSessionToSyncQueue(updatedSession, 'update');
+
+      // Add to sync queue using lazy initialization
+      try {
+        final syncService = SyncService();
+        await syncService.addSessionToSyncQueue(updatedSession, 'update');
+      } catch (e) {
+        // Handle sync error gracefully
+      }
     }
   }
 
@@ -81,9 +92,14 @@ class SessionService {
     final prefs = await SharedPreferences.getInstance();
     final sessionsJson = sessions.map((s) => s.toJson()).toList();
     await prefs.setString(_sessionsKey, jsonEncode(sessionsJson));
-    
-    // Add to sync queue
-    await _syncService.addSessionToSyncQueue(sessionToDelete, 'delete');
+
+    // Add to sync queue using lazy initialization
+    try {
+      final syncService = SyncService();
+      await syncService.addSessionToSyncQueue(sessionToDelete, 'delete');
+    } catch (e) {
+      // Handle sync error gracefully
+    }
   }
 
   // Get statistics

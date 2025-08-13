@@ -12,7 +12,6 @@ import 'package:pomodoro/screens/utility_screens/settings_pages/ContactUsPage.da
 import 'package:pomodoro/screens/utility_screens/settings_pages/NotificationPage.dart';
 import 'package:pomodoro/screens/utility_screens/settings_pages/PrivacyPolicyPage.dart';
 import 'package:pomodoro/screens/utility_screens/settings_pages/TermsPage.dart';
-import 'package:pomodoro/screens/utility_screens/settings_pages/TimerPage.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -30,8 +29,6 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => const AccountPage());
     case StatisticsScreen.routeName:
       return MaterialPageRoute(builder: (context) => const StatisticsScreen());
-    case TimerPage.routeName:
-      return MaterialPageRoute(builder: (context) => const TimerPage());
     case NotificationPage.routeName:
       return MaterialPageRoute(builder: (context) => const NotificationPage());
     case PrivacyPolicyPage.routeName:

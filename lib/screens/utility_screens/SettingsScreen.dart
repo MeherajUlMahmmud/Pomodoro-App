@@ -7,7 +7,6 @@ import 'package:pomodoro/screens/utility_screens/settings_pages/AboutUsPage.dart
 import 'package:pomodoro/screens/utility_screens/settings_pages/ContactUsPage.dart';
 import 'package:pomodoro/screens/utility_screens/settings_pages/PrivacyPolicyPage.dart';
 import 'package:pomodoro/screens/utility_screens/settings_pages/TermsPage.dart';
-import 'package:pomodoro/screens/utility_screens/settings_pages/TimerPage.dart';
 import 'package:pomodoro/utils/helper.dart';
 import 'package:pomodoro/utils/local_storage.dart';
 import 'package:pomodoro/widgets/sync_status_widget.dart';
@@ -26,16 +25,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       'title': 'Account',
       'icon': Icons.account_box_outlined,
       'route': AccountPage.routeName
-    },
-    // {
-    //   'title': 'View Statistics',
-    //   'icon': Icons.bar_chart_outlined,
-    //   'route': StatisticsScreen.routeName
-    // },
-    {
-      'title': 'Timer',
-      'icon': Icons.timer_outlined,
-      'route': TimerPage.routeName
     },
     {
       'title': 'Notifications',

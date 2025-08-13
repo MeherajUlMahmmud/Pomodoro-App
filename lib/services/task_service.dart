@@ -5,7 +5,8 @@ import 'package:pomodoro/services/sync_service.dart';
 
 class TaskService {
   static const String _tasksKey = 'pomodoro_tasks';
-  final SyncService _syncService = SyncService();
+  // Remove direct instantiation to break circular dependency
+  // final SyncService _syncService = SyncService();
 
   // Save a task
   Future<void> saveTask(Task task) async {
@@ -15,9 +16,14 @@ class TaskService {
 
     final tasksJson = tasks.map((t) => t.toJson()).toList();
     await prefs.setString(_tasksKey, jsonEncode(tasksJson));
-    
-    // Add to sync queue
-    await _syncService.addTaskToSyncQueue(task, 'create');
+
+    // Add to sync queue using lazy initialization
+    try {
+      final syncService = SyncService();
+      await syncService.addTaskToSyncQueue(task, 'create');
+    } catch (e) {
+      // Handle sync error gracefully
+    }
   }
 
   // Get all tasks
@@ -53,9 +59,14 @@ class TaskService {
       final prefs = await SharedPreferences.getInstance();
       final tasksJson = tasks.map((t) => t.toJson()).toList();
       await prefs.setString(_tasksKey, jsonEncode(tasksJson));
-      
-      // Add to sync queue
-      await _syncService.addTaskToSyncQueue(updatedTask, 'update');
+
+      // Add to sync queue using lazy initialization
+      try {
+        final syncService = SyncService();
+        await syncService.addTaskToSyncQueue(updatedTask, 'update');
+      } catch (e) {
+        // Handle sync error gracefully
+      }
     }
   }
 
@@ -68,9 +79,14 @@ class TaskService {
     final prefs = await SharedPreferences.getInstance();
     final tasksJson = tasks.map((t) => t.toJson()).toList();
     await prefs.setString(_tasksKey, jsonEncode(tasksJson));
-    
-    // Add to sync queue
-    await _syncService.addTaskToSyncQueue(taskToDelete, 'delete');
+
+    // Add to sync queue using lazy initialization
+    try {
+      final syncService = SyncService();
+      await syncService.addTaskToSyncQueue(taskToDelete, 'delete');
+    } catch (e) {
+      // Handle sync error gracefully
+    }
   }
 
   // Mark task as completed

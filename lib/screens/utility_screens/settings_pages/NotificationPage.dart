@@ -111,11 +111,16 @@ class _NotificationPageState extends State<NotificationPage> {
   ) {
     return SwitchListTile(
       title: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon),
           const SizedBox(width: 10),
-          Text(title),
+          Expanded(
+            child: Text(
+              title,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
+          ),
         ],
       ),
       value: value,

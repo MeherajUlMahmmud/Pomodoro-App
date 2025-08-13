@@ -81,9 +81,9 @@ class _ContactUsPageState extends State<ContactUsPage> {
             const SizedBox(height: 32),
 
             // Social Media Section
-            _buildSocialMediaSection(),
+            // _buildSocialMediaSection(),
 
-            const SizedBox(height: 20),
+            // const SizedBox(height: 20),
           ],
         ),
       ),
@@ -344,7 +344,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: Theme.of(context).primaryColor.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),

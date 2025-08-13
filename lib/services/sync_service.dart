@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pomodoro/services/connectivity_service.dart';
 import 'package:pomodoro/services/task_service.dart';
@@ -13,8 +14,9 @@ class SyncService {
   SyncService._internal();
 
   final ConnectivityService _connectivityService = ConnectivityService();
-  final TaskService _taskService = TaskService();
-  final SessionService _sessionService = SessionService();
+  // Remove direct instantiation to break circular dependency
+  // final TaskService _taskService = TaskService();
+  // final SessionService _sessionService = SessionService();
   final FirebaseService _firebaseService = FirebaseService();
 
   // Keys for storing sync data
@@ -104,15 +106,16 @@ class SyncService {
   // Process individual sync item
   Future<bool> _processSyncItem(Map<String, dynamic> item) async {
     try {
-      final type = item['type'] as String;
-      final operation = item['operation'] as String;
-      final data = item['data'] as Map<String, dynamic>;
+      final String type = item['type'];
+      final String operation = item['operation'];
+      final Map<String, dynamic> data = item['data'];
 
       if (type == 'task') {
         return await _syncTask(operation, data);
       } else if (type == 'session') {
         return await _syncSession(operation, data);
       }
+
       return false;
     } catch (e) {
       return false;
@@ -209,14 +212,18 @@ class SyncService {
     }
 
     try {
+      // Use lazy initialization to avoid circular dependency
+      final taskService = TaskService();
+      final sessionService = SessionService();
+
       // Sync tasks
-      final tasks = await _taskService.getTasks();
+      final tasks = await taskService.getTasks();
       for (final task in tasks) {
         await addTaskToSyncQueue(task, 'create');
       }
 
       // Sync sessions
-      final sessions = await _sessionService.getSessions();
+      final sessions = await sessionService.getSessions();
       for (final session in sessions) {
         await addSessionToSyncQueue(session, 'create');
       }
@@ -225,6 +232,7 @@ class SyncService {
       await processSyncQueue();
     } catch (e) {
       // Handle sync errors
+      debugPrint('Sync error: $e');
     }
   }
 

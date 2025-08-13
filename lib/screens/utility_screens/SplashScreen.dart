@@ -77,29 +77,47 @@ class _SplashScreenState extends State<SplashScreen>
       // Wait a minimum time to show the splash screen
       await Future.delayed(const Duration(milliseconds: 2000));
 
-      // Check if user is authenticated
-      final User? currentUser = _firebaseService.getCurrentUser();
+      // Check if user is authenticated with timeout
+      User? currentUser;
+      try {
+        currentUser = _firebaseService.getCurrentUser();
+      } catch (e) {
+        debugPrint('Error getting current user: $e');
+        currentUser = null;
+      }
 
       if (mounted) {
         setState(() {
           _isCheckingAuth = false;
         });
 
-        if (currentUser != null) {
-          // User is logged in
-          _navigateToHome();
-        } else {
-          // User is not logged in
-          _navigateToLogin();
+        // Add a small delay before navigation to show the success state
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        if (mounted) {
+          if (currentUser != null) {
+            // User is logged in
+            _navigateToHome();
+          } else {
+            // User is not logged in
+            _navigateToLogin();
+          }
         }
       }
     } catch (e) {
+      debugPrint('Authentication check error: $e');
       // Handle any errors by navigating to login
       if (mounted) {
         setState(() {
           _isCheckingAuth = false;
         });
-        _navigateToLogin();
+
+        // Add a small delay before navigation
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        if (mounted) {
+          _navigateToLogin();
+        }
       }
     }
   }
